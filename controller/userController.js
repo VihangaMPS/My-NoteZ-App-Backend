@@ -16,7 +16,7 @@ const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
 
     // Hide the password from response
-    //user.password = undefined;
+    user.password = undefined;
 
     res.status(statusCode).json({ // 201 - created
         status: 'success',

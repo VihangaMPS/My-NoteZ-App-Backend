@@ -2,10 +2,11 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const globalErrorHandler = require('./controller/errorController');
-
+const AppError = require("./utils/appError");
 const userRouter = require('./routes/userRoutes');
-const User = require("./models/userModel")
 
+
+const User = require("./models/userModel")
 const jwt = require("jsonwebtoken");
 const {authenticateToken} = require('./util')
 
@@ -26,6 +27,9 @@ app.use(cors({ origin: "*" }));
 // })
 
 app.use('/api/users',userRouter);
+app.all('*', (req, res, next) => {
+    next(  new AppError(`Can't find ${req.originalUrl} on this server!`, 404) );
+});
 
 /*app.post("/createAccount", async (req, res) => {
     const {fullName, email, password} = req.body;
