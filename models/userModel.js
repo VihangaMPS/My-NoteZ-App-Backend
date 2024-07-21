@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -22,7 +23,21 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: new Date().getTime()
     }
-})
+});
+
+
+//////  ================ Middleware  ================ /////////
+
+// Encrypting password when new User Signup --------------------
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+
+    // encrypting password ---------
+    this.password = await bcrypt.hash(this.password, 12);
+
+    next();
+});
+
 
 const User = mongoose.model("User", userSchema);
 
