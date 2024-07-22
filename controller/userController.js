@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 
 // Creating JWT Token  ----------------
 const signToken = id => {
-    return jwt.sign({ id: id}, process.env.JWT_SECRET, {
+    return jwt.sign({id: id}, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 }
@@ -27,7 +27,14 @@ const createSendToken = (user, statusCode, res) => {
     })
 }
 
-exports.signup = catchAsync(async (req, res) => {
+exports.signup = catchAsync(async (req, res, next) => {
+    const {email} = req.body;
+    const user = await User.findOne({email: email});
+
+    if (user) {
+        return next(new AppError('User already exists !', 400));
+    }
+
     const newUser = await User.create(req.body);
 
     createSendToken(newUser, 201, res)
@@ -38,7 +45,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
     // 1)Checking email password exists
     if (!email || !password) {
-        next(new AppError('Please provide email and password', 400)); // 400 - Bad request
+        return next(new AppError('Please provide email and password', 400)); // 400 - Bad request
     }
 
     // 2)Check if user exists & password is correct
