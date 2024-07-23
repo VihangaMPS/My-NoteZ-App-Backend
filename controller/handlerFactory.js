@@ -1,16 +1,9 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const APIFeatures = require("../utils/apiFeatures");
 
 exports.getAll = Model => catchAsync(async (req, res, next) =>  {
-    // To Allow for nested GET reviews on tour
-    let filter = {};
-    if (req.params.tourId) {
-        filter = { tour: req.params.tourId }
-    }
 
-    const features = new APIFeatures(Model.find(filter), req.query).filter().sortData().limitFields().pagination() ;
-    const doc = await features.query;
+    const doc = await Model.find();
 
     res.status(200)
         .json({
@@ -46,7 +39,14 @@ exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) =
 });
 
 exports.createOne = Model => catchAsync(async (req, res, next) => {
-    const doc = await Model.create(req.body);
+
+    const doc = await Model.create({
+        title: req.body.title,
+        content: req.body.content,
+        tags: req.body.tags,
+        isPinned: req.body.isPinned,
+        user: req.user.id
+    });
 
     res.status(201).json({
         status: 'success',
@@ -84,7 +84,7 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
         return next(new AppError('No Document found with that ID', 404));
     }
 
-    res.status(204).json({
+    res.status(204).json({ // 204 - No Content
         status: 'success',
         data: null
     });

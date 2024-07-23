@@ -32,12 +32,12 @@ exports.signup = catchAsync(async (req, res, next) => {
     const {email} = req.body;
     const user = await User.findOne({email: email});
 
-    // Check user already exists, when creating a new user
+    // 1) Check user already exists
     if (user) {
         return next(new AppError('User already exists !', 400));
     }
 
-    // Creating a new User
+    // 2) Creating a new User
     const newUser = await User.create(req.body);
 
     createSendToken(newUser, 201, res)

@@ -17,9 +17,9 @@ const noteSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    userId: {
+    user: {
         type: String,
-        required: [true, "Please provide a User ID !"]
+        required: [true, "Note must belongs to a User"]
     },
     createdOn : {
         type: Date,
