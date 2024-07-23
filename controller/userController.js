@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError");
 const {promisify} = require("util");
+const factory = require('./handlerFactory');
 
 
 // Creating JWT Token  ----------------
@@ -92,3 +93,7 @@ exports.protect = catchAsync( async (req, res, next) => {
 
     next();
 });
+
+exports.getAllUsers = factory.getAll(User);
+
+exports.getUser = factory.getOne(User);

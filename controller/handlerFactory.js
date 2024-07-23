@@ -16,14 +16,10 @@ exports.getAll = Model => catchAsync(async (req, res, next) =>  {
 });
 
 exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) => {
-    let query = Model.findById(req.params.id);
+    console.log(req.query);
 
-    if (populateOptions) query = query.populate(populateOptions);
-
-    const doc = await query;
-    // const doc = await Model.findById(req.params.id).populate('reviews');
-    // Populate means -> if we don't use populate we get only the reference id.
-    // if we use populate we get the data for that reference id but only give in response,not updating real database.
+    const doc = await Model.findById(req.user.id);
+    // this.query = this.query.sort('-createdAt');
 
     if (!doc) {
         return next(new AppError('No Document found with that ID', 404));
@@ -33,7 +29,12 @@ exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) =
         .json({
             status: 'success',
             data: {
-                document: doc
+                document: {
+                    "_id": doc._id,
+                    fullName: doc.fullName,
+                    email: doc.email,
+                    createdOn: doc.createdOn,
+                }
             }
         });
 });
